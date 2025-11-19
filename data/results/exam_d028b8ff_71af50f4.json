@@ -1,0 +1,341 @@
+{
+  "exam_id": "exam_d028b8ff",
+  "student_name": "ljk_smp1darangdan_test2",
+  "student_number": null,
+  "answers": {
+    "0": 0,
+    "1": 4,
+    "2": 1,
+    "3": 3,
+    "4": 2,
+    "5": 0,
+    "6": 1,
+    "7": 2,
+    "8": 3,
+    "9": 4,
+    "10": 4,
+    "11": 3,
+    "12": 2,
+    "13": 1,
+    "14": 0,
+    "15": 2,
+    "16": 1,
+    "17": 3,
+    "18": 0,
+    "19": 4,
+    "20": 1,
+    "21": 1,
+    "22": 2,
+    "23": 2,
+    "24": 3,
+    "25": 3,
+    "26": 0,
+    "27": 0,
+    "28": 4,
+    "29": 4,
+    "30": 3,
+    "31": 3,
+    "32": 2,
+    "33": 2,
+    "34": 1,
+    "35": 1,
+    "36": 4,
+    "37": 4,
+    "38": 0,
+    "39": 0
+  },
+  "unanswered": [],
+  "score": {
+    "correct": 13,
+    "wrong": 27,
+    "unanswered": 0,
+    "total": 40,
+    "percentage": 32.5
+  },
+  "details": [
+    {
+      "question_num": 1,
+      "answer_key": "A",
+      "student_answer": "A",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 2,
+      "answer_key": "B",
+      "student_answer": "E",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 3,
+      "answer_key": "C",
+      "student_answer": "B",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 4,
+      "answer_key": "D",
+      "student_answer": "D",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 5,
+      "answer_key": "E",
+      "student_answer": "C",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 6,
+      "answer_key": "A",
+      "student_answer": "A",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 7,
+      "answer_key": "B",
+      "student_answer": "B",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 8,
+      "answer_key": "C",
+      "student_answer": "C",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 9,
+      "answer_key": "D",
+      "student_answer": "D",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 10,
+      "answer_key": "E",
+      "student_answer": "E",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 11,
+      "answer_key": "A",
+      "student_answer": "E",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 12,
+      "answer_key": "B",
+      "student_answer": "D",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 13,
+      "answer_key": "C",
+      "student_answer": "C",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 14,
+      "answer_key": "D",
+      "student_answer": "B",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 15,
+      "answer_key": "E",
+      "student_answer": "A",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 16,
+      "answer_key": "A",
+      "student_answer": "C",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 17,
+      "answer_key": "B",
+      "student_answer": "B",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 18,
+      "answer_key": "C",
+      "student_answer": "D",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 19,
+      "answer_key": "D",
+      "student_answer": "A",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 20,
+      "answer_key": "E",
+      "student_answer": "E",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 21,
+      "answer_key": "E",
+      "student_answer": "B",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 22,
+      "answer_key": "D",
+      "student_answer": "B",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 23,
+      "answer_key": "C",
+      "student_answer": "C",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 24,
+      "answer_key": "B",
+      "student_answer": "C",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 25,
+      "answer_key": "A",
+      "student_answer": "D",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 26,
+      "answer_key": "E",
+      "student_answer": "D",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 27,
+      "answer_key": "D",
+      "student_answer": "A",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 28,
+      "answer_key": "C",
+      "student_answer": "A",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 29,
+      "answer_key": "B",
+      "student_answer": "E",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 30,
+      "answer_key": "A",
+      "student_answer": "E",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 31,
+      "answer_key": "B",
+      "student_answer": "D",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 32,
+      "answer_key": "B",
+      "student_answer": "D",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 33,
+      "answer_key": "C",
+      "student_answer": "C",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 34,
+      "answer_key": "C",
+      "student_answer": "C",
+      "is_correct": true,
+      "points": 1.0
+    },
+    {
+      "question_num": 35,
+      "answer_key": "D",
+      "student_answer": "B",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 36,
+      "answer_key": "D",
+      "student_answer": "B",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 37,
+      "answer_key": "B",
+      "student_answer": "E",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 38,
+      "answer_key": "B",
+      "student_answer": "E",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 39,
+      "answer_key": "D",
+      "student_answer": "A",
+      "is_correct": false,
+      "points": 0.0
+    },
+    {
+      "question_num": 40,
+      "answer_key": "B",
+      "student_answer": "A",
+      "is_correct": false,
+      "points": 0.0
+    }
+  ],
+  "image_path": "/uploads/0473540868c9_ljk_smp1darangdan_test2.jpg",
+  "processed_image_path": "/processed/marked_0473540868c9.jpg",
+  "result_id": "exam_d028b8ff_71af50f4",
+  "processed_at": "2025-10-30T19:08:52.451755"
+}

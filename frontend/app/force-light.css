@@ -1,0 +1,23 @@
+/* Custom CSS overrides for Next.js default dark mode */
+html,
+body,
+#__next,
+#__next > div {
+  background: linear-gradient(135deg, #e0e7ff 0%, #fce7f3 100%) !important;
+  color: #1e293b !important;
+  color-scheme: light !important;
+}
+
+/* Prevent any dark mode artifacts */
+* {
+  color-scheme: light !important;
+}
+
+/* Force remove any dark background */
+[data-theme="dark"],
+.dark,
+html.dark,
+body.dark {
+  background: linear-gradient(135deg, #e0e7ff 0%, #fce7f3 100%) !important;
+  color: #1e293b !important;
+}
