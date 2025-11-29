@@ -7,6 +7,8 @@ import Image from 'next/image';
 import { getExamResults, getExamStatistics, getExam, type Result, type Statistics, type Exam, api } from '@/lib/api';
 import { formatDate, getGrade, getGradeLabel, downloadFile } from '@/lib/utils';
 import { ArrowLeft, Download, TrendingUp, TrendingDown, AlertTriangle, Image as ImageIcon, X, Search, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { SkeletonStatCard, SkeletonResultRow } from '@/components/Skeleton';
+import { ToastContainer, toast } from '@/components/Toast';
 
 const ITEMS_PER_PAGE = 15;
 
@@ -64,9 +66,10 @@ export default function ResultsPage() {
       const response = await fetch(`http://localhost:8000/api/exams/${examId}/export/excel`);
       const blob = await response.blob();
       downloadFile(blob, `hasil_${exam?.title || examId}.xlsx`);
+      toast.success('Export berhasil');
     } catch (error) {
       console.error('Failed to export:', error);
-      alert('Gagal export Excel');
+      toast.error('Gagal export Excel');
     }
   };
 
@@ -138,12 +141,13 @@ export default function ResultsPage() {
       await api.delete(`/api/results/${deleteModal.result.result_id}`);
       setResults(prev => prev.filter(r => r.result_id !== deleteModal.result!.result_id));
       setDeleteModal({ show: false, result: null });
+      toast.success('Hasil berhasil dihapus');
       // Reload statistics
       const statsData = await getExamStatistics(examId);
       setStatistics(statsData);
     } catch (error) {
       console.error('Failed to delete result:', error);
-      alert('Gagal menghapus hasil');
+      toast.error('Gagal menghapus hasil');
     } finally {
       setDeleting(false);
     }
@@ -151,11 +155,48 @@ export default function ResultsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Memuat hasil...</p>
-        </div>
+      <div className="min-h-screen bg-gray-50">
+        {/* Header Skeleton */}
+        <header className="bg-white border-b border-gray-200">
+          <div className="max-w-6xl mx-auto px-4 py-4">
+            <div className="flex items-center gap-4">
+              <div className="w-8 h-8 bg-gray-200 rounded animate-pulse" />
+              <div className="flex-1">
+                <div className="h-6 bg-gray-200 rounded w-48 mb-2 animate-pulse" />
+                <div className="h-4 bg-gray-200 rounded w-64 animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </header>
+        <main className="max-w-6xl mx-auto px-4 py-8">
+          {/* Stats Skeleton */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-8">
+            {[1, 2, 3, 4].map(i => <SkeletonStatCard key={i} />)}
+          </div>
+          {/* Table Skeleton */}
+          <div className="bg-white rounded-lg border border-gray-200">
+            <div className="px-5 py-4 border-b border-gray-200">
+              <div className="h-6 bg-gray-200 rounded w-48 animate-pulse" />
+            </div>
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">No</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Benar</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Salah</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Kosong</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Skor</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Nilai</th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {[1, 2, 3, 4, 5].map(i => <SkeletonResultRow key={i} />)}
+              </tbody>
+            </table>
+          </div>
+        </main>
       </div>
     );
   }
@@ -191,28 +232,28 @@ export default function ResultsPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3 md:gap-4">
               <Link
                 href={`/exam/${examId}`}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <ArrowLeft className="w-5 h-5 text-gray-600" />
               </Link>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3">
                 <Image
                   src="/Logo.jpg"
                   alt="Logo"
                   width={40}
                   height={40}
-                  className="rounded-full"
+                  className="rounded-full w-8 h-8 md:w-10 md:h-10"
                 />
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900">
+                <div className="min-w-0">
+                  <h1 className="text-base md:text-xl font-bold text-gray-900 truncate">
                     Hasil: {exam.title}
                   </h1>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-xs md:text-sm text-gray-500 truncate">
                     {formatDate(exam.date)} • {exam.subject} • {exam.class}
                   </p>
                 </div>
@@ -220,58 +261,58 @@ export default function ResultsPage() {
             </div>
             <button
               onClick={handleExportExcel}
-              className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
+              className="px-3 md:px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               <Download className="w-4 h-4" />
-              Export Excel
+              <span className="sm:inline">Export Excel</span>
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Statistics Cards */}
+      <main className="max-w-6xl mx-auto px-4 py-6 md:py-8">
+        {/* Statistics Cards - Responsive */}
         {statistics && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
+            <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-4">
               <p className="text-xs text-gray-500 uppercase tracking-wide">Rata-rata</p>
-              <p className="text-2xl font-bold text-gray-900 mt-1">
+              <p className="text-xl md:text-2xl font-bold text-gray-900 mt-1">
                 {(statistics.average_score ?? 0).toFixed(1)}
               </p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-gray-400 mt-1 hidden sm:block">
                 dari 100
               </p>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-4">
               <p className="text-xs text-gray-500 uppercase tracking-wide">Tertinggi</p>
-              <p className="text-2xl font-bold text-green-600 mt-1">
+              <p className="text-xl md:text-2xl font-bold text-green-600 mt-1">
                 {(statistics.highest_score ?? 0).toFixed(0)}
               </p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-gray-400 mt-1 hidden sm:block">
                 <TrendingUp className="w-3 h-3 inline mr-1" />
                 Maksimal
               </p>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-4">
               <p className="text-xs text-gray-500 uppercase tracking-wide">Terendah</p>
-              <p className="text-2xl font-bold text-red-600 mt-1">
+              <p className="text-xl md:text-2xl font-bold text-red-600 mt-1">
                 {(statistics.lowest_score ?? 0).toFixed(0)}
               </p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-gray-400 mt-1 hidden sm:block">
                 <TrendingDown className="w-3 h-3 inline mr-1" />
                 Minimal
               </p>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="bg-white rounded-lg border border-gray-200 p-3 md:p-4">
               <p className="text-xs text-gray-500 uppercase tracking-wide">Kelulusan</p>
-              <p className="text-2xl font-bold text-blue-600 mt-1">
+              <p className="text-xl md:text-2xl font-bold text-blue-600 mt-1">
                 {(statistics.passing_rate ?? 0).toFixed(0)}%
               </p>
-              <p className="text-xs text-gray-400 mt-1">
-                {Math.round((statistics.passing_rate ?? 0) * results.length / 100)} dari {results.length} siswa
+              <p className="text-xs text-gray-400 mt-1 hidden sm:block">
+                {Math.round((statistics.passing_rate ?? 0) * results.length / 100)} dari {results.length}
               </p>
             </div>
           </div>
@@ -279,9 +320,9 @@ export default function ResultsPage() {
 
         {/* Results Table */}
         <div className="bg-white rounded-lg border border-gray-200">
-          <div className="px-5 py-4 border-b border-gray-200">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="font-semibold text-gray-900">
+          <div className="px-4 md:px-5 py-4 border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+              <h2 className="font-semibold text-gray-900 text-sm md:text-base">
                 Daftar Nilai ({filteredResults.length} dari {results.length} siswa)
               </h2>
               <div className="flex gap-2">
@@ -289,7 +330,7 @@ export default function ResultsPage() {
                   value={sortBy}
                   title="Urutkan berdasarkan"
                   onChange={(e) => setSortBy(e.target.value as 'name' | 'score')}
-                  className="px-3 py-1.5 border border-gray-300 rounded-lg text-sm"
+                  className="px-2 md:px-3 py-1.5 border border-gray-300 rounded-lg text-sm flex-1 sm:flex-none"
                 >
                   <option value="score">Nilai</option>
                   <option value="name">Nama</option>
@@ -304,10 +345,10 @@ export default function ResultsPage() {
               </div>
             </div>
 
-            {/* Search & Filter */}
-            <div className="flex flex-wrap gap-3">
+            {/* Search & Filter - Responsive */}
+            <div className="flex flex-col sm:flex-row flex-wrap gap-2 md:gap-3">
               {/* Search Input */}
-              <div className="relative flex-1 min-w-[180px]">
+              <div className="relative flex-1 min-w-0 sm:min-w-[180px]">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
@@ -318,54 +359,57 @@ export default function ResultsPage() {
                 />
               </div>
 
-              {/* Grade Filter */}
-              <select
-                value={filterGrade}
-                onChange={(e) => setFilterGrade(e.target.value)}
-                title="Filter berdasarkan nilai"
-                className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">Semua Nilai</option>
-                <option value="A">A (90-100)</option>
-                <option value="B">B (80-89)</option>
-                <option value="C">C (70-79)</option>
-                <option value="D">D (60-69)</option>
-                <option value="E">E (&lt;60)</option>
-              </select>
-
-              {/* Score Range */}
-              <div className="flex items-center gap-2">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  value={filterScoreMin}
-                  onChange={(e) => setFilterScoreMin(e.target.value)}
-                  min="0"
-                  max="100"
-                  className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-                <span className="text-gray-400">-</span>
-                <input
-                  type="number"
-                  placeholder="Max"
-                  value={filterScoreMax}
-                  onChange={(e) => setFilterScoreMax(e.target.value)}
-                  min="0"
-                  max="100"
-                  className="w-20 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-              </div>
-
-              {/* Clear Filters */}
-              {hasActiveFilters && (
-                <button
-                  onClick={clearFilters}
-                  className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1"
+              {/* Filters Row */}
+              <div className="flex gap-2 flex-wrap">
+                {/* Grade Filter */}
+                <select
+                  value={filterGrade}
+                  onChange={(e) => setFilterGrade(e.target.value)}
+                  title="Filter berdasarkan nilai"
+                  className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 flex-1 sm:flex-none"
                 >
-                  <X className="w-4 h-4" />
-                  Reset
-                </button>
-              )}
+                  <option value="">Semua Nilai</option>
+                  <option value="A">A (90-100)</option>
+                  <option value="B">B (80-89)</option>
+                  <option value="C">C (70-79)</option>
+                  <option value="D">D (60-69)</option>
+                  <option value="E">E (&lt;60)</option>
+                </select>
+
+                {/* Score Range - Hidden on mobile */}
+                <div className="hidden sm:flex items-center gap-2">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={filterScoreMin}
+                    onChange={(e) => setFilterScoreMin(e.target.value)}
+                    min="0"
+                    max="100"
+                    className="w-16 md:w-20 px-2 md:px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <span className="text-gray-400">-</span>
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={filterScoreMax}
+                    onChange={(e) => setFilterScoreMax(e.target.value)}
+                    min="0"
+                    max="100"
+                    className="w-16 md:w-20 px-2 md:px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+
+                {/* Clear Filters */}
+                {hasActiveFilters && (
+                  <button
+                    onClick={clearFilters}
+                    className="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-1"
+                  >
+                    <X className="w-4 h-4" />
+                    <span className="hidden sm:inline">Reset</span>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
@@ -713,6 +757,9 @@ export default function ResultsPage() {
           </div>
         </div>
       )}
+
+      {/* Toast Container */}
+      <ToastContainer />
     </div>
   );
 }

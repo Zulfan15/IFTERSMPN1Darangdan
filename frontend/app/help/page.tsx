@@ -10,7 +10,9 @@ import {
   BarChart3,
   Download,
   BookOpen,
-  AlertCircle
+  AlertCircle,
+  Camera,
+  Smartphone
 } from 'lucide-react';
 
 export default function HelpPage() {
@@ -122,21 +124,41 @@ export default function HelpPage() {
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
-                  <Upload className="w-5 h-5 text-green-600" />
-                  <h3 className="font-semibold text-gray-900">Upload LJK Siswa</h3>
+                  <Camera className="w-5 h-5 text-green-600" />
+                  <h3 className="font-semibold text-gray-900">Scan atau Upload LJK Siswa</h3>
                 </div>
                 <p className="text-sm text-gray-600 mb-3">
-                  Upload lembar jawaban siswa yang sudah di-scan dalam format PDF atau JPG.
+                  Ada 2 cara untuk memasukkan LJK siswa ke sistem:
                 </p>
-                <div className="bg-green-50 rounded-lg p-3 space-y-3">
-                  <div>
-                    <p className="text-xs font-medium text-gray-700 mb-2">Persyaratan File:</p>
-                    <ul className="list-disc list-inside space-y-1 text-xs text-gray-600 ml-2">
-                      <li>Format: PDF atau JPG/JPEG</li>
-                      <li>Ukuran maksimal: 10MB</li>
-                      <li>Scan dengan kualitas baik (300 DPI)</li>
-                    </ul>
+                
+                {/* Camera Option */}
+                <div className="bg-green-50 rounded-lg p-3 mb-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Smartphone className="w-4 h-4 text-green-600" />
+                    <p className="text-xs font-bold text-green-700">📷 Scan dengan Kamera HP (Direkomendasikan)</p>
                   </div>
+                  <ul className="list-disc list-inside space-y-1 text-xs text-gray-600 ml-2">
+                    <li>Klik tombol "Scan dengan Kamera"</li>
+                    <li>Posisikan LJK dalam bingkai panduan</li>
+                    <li>Pastikan pencahayaan cukup</li>
+                    <li>Tekan tombol capture untuk mengambil foto</li>
+                    <li>Preview hasil dan konfirmasi</li>
+                    <li>Bisa ambil banyak foto sekaligus</li>
+                  </ul>
+                </div>
+
+                {/* Upload Option */}
+                <div className="bg-gray-50 rounded-lg p-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Upload className="w-4 h-4 text-gray-600" />
+                    <p className="text-xs font-bold text-gray-700">📁 Upload File</p>
+                  </div>
+                  <ul className="list-disc list-inside space-y-1 text-xs text-gray-600 ml-2">
+                    <li>Format: JPG, JPEG, PNG, atau PDF</li>
+                    <li>Ukuran maksimal: 10MB per file</li>
+                    <li>Bisa upload banyak file sekaligus</li>
+                    <li>Untuk hasil terbaik gunakan resolusi 300 DPI</li>
+                  </ul>
                 </div>
               </div>
             </div>
@@ -198,16 +220,33 @@ export default function HelpPage() {
 
         {/* Tips & Important Notes */}
         <div className="mt-8 space-y-4">
+          {/* Tips for Camera */}
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <Camera className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-green-900 mb-2">Tips Scan dengan Kamera HP</h3>
+                <ul className="space-y-1 text-sm text-green-800">
+                  <li>• Gunakan kamera belakang untuk kualitas lebih baik</li>
+                  <li>• Pastikan pencahayaan cukup (hindari bayangan)</li>
+                  <li>• Posisikan LJK tegak lurus dengan kamera</li>
+                  <li>• Pastikan seluruh LJK masuk dalam bingkai</li>
+                  <li>• Hindari pantulan cahaya pada kertas</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div className="flex items-start gap-3">
               <BookOpen className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="font-semibold text-blue-900 mb-2">Tips Penggunaan</h3>
+                <h3 className="font-semibold text-blue-900 mb-2">Tips Penggunaan Umum</h3>
                 <ul className="space-y-1 text-sm text-blue-800">
                   <li>• Gunakan LJK template SMPN 1 Darangdan untuk hasil optimal</li>
-                  <li>• Scan LJK dengan pencahayaan cukup dan tidak miring</li>
                   <li>• Pastikan bubble terisi dengan pensil 2B yang gelap</li>
                   <li>• Hindari lipatan atau noda pada area jawaban</li>
+                  <li>• Periksa hasil scan sebelum memproses</li>
                 </ul>
               </div>
             </div>
@@ -222,6 +261,7 @@ export default function HelpPage() {
                   <li>• Sistem mendeteksi bubble dengan intensitas &lt; 150 sebagai terisi</li>
                   <li>• Hanya soal 1-60 yang dapat diproses (3 kolom × 20 soal)</li>
                   <li>• ROI sudah dikonfigurasi untuk template sekolah</li>
+                  <li>• Aplikasi bisa diinstall di HP (PWA) untuk akses cepat</li>
                 </ul>
               </div>
             </div>

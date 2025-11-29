@@ -6,7 +6,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { processLJK } from '@/lib/api';
 import FileUploader from '@/components/FileUploader';
-import { ArrowLeft, CheckCircle, XCircle, Clock } from 'lucide-react';
+import CameraCapture from '@/components/CameraCapture';
+import { ArrowLeft, CheckCircle, XCircle, Clock, Camera, Upload } from 'lucide-react';
+import { ToastContainer, toast } from '@/components/Toast';
 
 interface UploadStatus {
   file: File;
@@ -24,16 +26,38 @@ export default function UploadLJKPage() {
   const [files, setFiles] = useState<File[]>([]);
   const [uploadStatuses, setUploadStatuses] = useState<UploadStatus[]>([]);
   const [processing, setProcessing] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+  const [uploadMode, setUploadMode] = useState<'select' | 'file' | 'camera'>('select');
 
   const handleFilesSelected = (selectedFiles: File[]) => {
-    setFiles(selectedFiles);
-    setUploadStatuses(
-      selectedFiles.map((file) => ({
+    setFiles(prev => [...prev, ...selectedFiles]);
+    setUploadStatuses(prev => [
+      ...prev,
+      ...selectedFiles.map((file) => ({
         file,
-        status: 'pending',
+        status: 'pending' as const,
         progress: 0,
       }))
-    );
+    ]);
+    setUploadMode('select');
+  };
+
+  const handleCameraCapture = (file: File) => {
+    setFiles(prev => [...prev, file]);
+    setUploadStatuses(prev => [
+      ...prev,
+      {
+        file,
+        status: 'pending' as const,
+        progress: 0,
+      }
+    ]);
+    toast.success(`Foto "${file.name}" berhasil diambil`);
+  };
+
+  const handleCloseCamera = () => {
+    setShowCamera(false);
+    setUploadMode('select');
   };
 
   const processFiles = async () => {
@@ -123,16 +147,110 @@ export default function UploadLJKPage() {
       </header>
 
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Upload Mode Selection */}
+        {uploadMode === 'select' && uploadStatuses.length === 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {/* Camera Option */}
+            <button
+              onClick={() => setShowCamera(true)}
+              className="bg-white rounded-lg border-2 border-dashed border-gray-300 p-8 hover:border-blue-400 hover:bg-blue-50 transition-all group"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-200 transition-colors">
+                  <Camera className="w-8 h-8 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  📷 Scan dengan Kamera
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Gunakan kamera HP untuk scan LJK langsung
+                </p>
+                <span className="inline-block mt-3 px-3 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
+                  Direkomendasikan
+                </span>
+              </div>
+            </button>
+
+            {/* File Upload Option */}
+            <button
+              onClick={() => setUploadMode('file')}
+              className="bg-white rounded-lg border-2 border-dashed border-gray-300 p-8 hover:border-gray-400 hover:bg-gray-50 transition-all group"
+            >
+              <div className="text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-gray-200 transition-colors">
+                  <Upload className="w-8 h-8 text-gray-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  📁 Upload File
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Upload gambar LJK dari perangkat Anda
+                </p>
+                <span className="inline-block mt-3 px-3 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">
+                  JPG, PNG
+                </span>
+              </div>
+            </button>
+          </div>
+        )}
+
         {/* File Uploader */}
-        {uploadStatuses.length === 0 && (
+        {uploadMode === 'file' && uploadStatuses.length === 0 && (
           <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-gray-900">Upload File LJK</h2>
+              <button
+                onClick={() => setUploadMode('select')}
+                className="text-sm text-blue-600 hover:text-blue-700"
+              >
+                ← Kembali
+              </button>
+            </div>
             <FileUploader onFilesSelected={handleFilesSelected} />
           </div>
         )}
 
-        {/* Process Button */}
-        {files.length > 0 && !processing && !allProcessed && (
-          <div className="mb-6">
+        {/* Files Queue (when files are added but not processed yet) */}
+        {uploadStatuses.length > 0 && !processing && !allProcessed && (
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-gray-900">
+                {files.length} LJK Siap Diproses
+              </h2>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setShowCamera(true)}
+                  className="px-3 py-1.5 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors flex items-center gap-1"
+                >
+                  <Camera className="w-4 h-4" />
+                  Tambah Foto
+                </button>
+              </div>
+            </div>
+            
+            {/* Preview thumbnails */}
+            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-2 mb-4">
+              {files.map((file, idx) => (
+                <div key={idx} className="relative aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden">
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt={file.name}
+                    className="w-full h-full object-cover"
+                  />
+                  <button
+                    onClick={() => {
+                      setFiles(prev => prev.filter((_, i) => i !== idx));
+                      setUploadStatuses(prev => prev.filter((_, i) => i !== idx));
+                    }}
+                    className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                    title="Hapus"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+
             <button
               onClick={processFiles}
               className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
@@ -223,6 +341,7 @@ export default function UploadLJKPage() {
                   onClick={() => {
                     setFiles([]);
                     setUploadStatuses([]);
+                    setUploadMode('select');
                   }}
                   className="flex-1 px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                 >
@@ -239,6 +358,17 @@ export default function UploadLJKPage() {
           </div>
         )}
       </main>
+
+      {/* Camera Modal */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={handleCameraCapture}
+          onClose={handleCloseCamera}
+        />
+      )}
+
+      {/* Toast */}
+      <ToastContainer />
     </div>
   );
 }
