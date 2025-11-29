@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { processLJK } from '@/lib/api';
 import FileUploader from '@/components/FileUploader';
 import { ArrowLeft, CheckCircle, XCircle, Clock } from 'lucide-react';
@@ -93,20 +94,29 @@ export default function UploadLJKPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
             <Link
               href={`/exam/${examId}`}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <ArrowLeft className="w-5 h-5" />
+              <ArrowLeft className="w-5 h-5 text-gray-600" />
             </Link>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900">Upload LJK</h1>
-              <p className="text-sm text-gray-500">
-                Upload dan proses lembar jawaban siswa
-              </p>
+            <div className="flex items-center gap-3">
+              <Image
+                src="/Logo.jpg"
+                alt="Logo"
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Upload LJK</h1>
+                <p className="text-sm text-gray-500">
+                  Upload dan proses lembar jawaban siswa
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -115,7 +125,7 @@ export default function UploadLJKPage() {
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* File Uploader */}
         {uploadStatuses.length === 0 && (
-          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
             <FileUploader onFilesSelected={handleFilesSelected} />
           </div>
         )}
@@ -125,18 +135,18 @@ export default function UploadLJKPage() {
           <div className="mb-6">
             <button
               onClick={processFiles}
-              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-lg"
+              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
             >
-              🚀 Mulai Proses {files.length} LJK
+              Mulai Proses {files.length} LJK
             </button>
           </div>
         )}
 
         {/* Upload Progress */}
         {uploadStatuses.length > 0 && (
-          <div className="bg-white rounded-xl shadow-md p-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">
+              <h2 className="font-semibold text-gray-900">
                 Status Pemrosesan
               </h2>
               <div className="text-sm text-gray-500">
@@ -183,10 +193,9 @@ export default function UploadLJKPage() {
                   </div>
 
                   {status.status === 'processing' && (
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200 rounded-full h-1.5">
                       <div
-                        className="bg-blue-600 h-2 rounded-full transition-all"
-                        style={{ width: `${status.progress}%` }}
+                        className={`bg-blue-600 h-1.5 rounded-full transition-all ${status.progress === 50 ? 'w-1/2' : 'w-full'}`}
                       />
                     </div>
                   )}
@@ -201,7 +210,7 @@ export default function UploadLJKPage() {
 
                   {status.status === 'error' && (
                     <div className="text-sm text-red-600 mt-2">
-                      ❌ {status.error}
+                      {status.error}
                     </div>
                   )}
                 </div>
@@ -215,13 +224,13 @@ export default function UploadLJKPage() {
                     setFiles([]);
                     setUploadStatuses([]);
                   }}
-                  className="flex-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
+                  className="flex-1 px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                 >
                   Upload Lagi
                 </button>
                 <Link
                   href={`/exam/${examId}/results`}
-                  className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-center"
+                  className="flex-1 px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-center"
                 >
                   Lihat Semua Hasil →
                 </Link>

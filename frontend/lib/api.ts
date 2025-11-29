@@ -89,6 +89,25 @@ export const deleteExam = async (examId: string): Promise<void> => {
   await api.delete(`/api/exams/${examId}`);
 };
 
+export const updateExam = async (
+  examId: string,
+  examData: {
+    title: string;
+    date: string;
+    subject: string;
+    class: string;
+    active_questions: number;
+    answer_key: Record<number, number>;
+  }
+): Promise<Exam> => {
+  const response = await api.put(`/api/exams/${examId}`, examData);
+  return response.data;
+};
+
+export const deleteResult = async (resultId: string): Promise<void> => {
+  await api.delete(`/api/results/${resultId}`);
+};
+
 // Process LJK
 export const processLJK = async (
   examId: string,

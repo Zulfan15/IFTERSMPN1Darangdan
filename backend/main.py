@@ -96,6 +96,29 @@ async def delete_exam(exam_id: str):
         raise HTTPException(status_code=404, detail="Exam not found")
     return {"message": "Exam deleted successfully"}
 
+@app.put("/api/exams/{exam_id}", response_model=ExamResponse)
+async def update_exam(exam_id: str, exam: ExamCreate):
+    """Update exam configuration"""
+    try:
+        existing_exam = storage.load_exam(exam_id)
+        if not existing_exam:
+            raise HTTPException(status_code=404, detail="Exam not found")
+        
+        exam_data = exam.model_dump(by_alias=True)
+        exam_data['exam_id'] = exam_id
+        exam_data['created_at'] = existing_exam.get('created_at')
+        
+        success = storage.update_exam(exam_id, exam_data)
+        if not success:
+            raise HTTPException(status_code=500, detail="Failed to update exam")
+        
+        updated_exam = storage.load_exam(exam_id)
+        return updated_exam
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 # ============ UPLOAD & PROCESS ============
 
 @app.post("/api/process-ljk")

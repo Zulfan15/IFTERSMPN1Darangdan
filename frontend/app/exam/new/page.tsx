@@ -6,6 +6,7 @@ import { createExam } from '@/lib/api';
 import AnswerKeyGrid from '@/components/AnswerKeyGrid';
 import { ArrowLeft, Save, BookOpen } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function NewExamPage() {
   const router = useRouter();
@@ -72,73 +73,74 @@ export default function NewExamPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-      {/* Animated Background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute top-40 right-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-      </div>
-
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="relative bg-white/80 backdrop-blur-lg border-b border-gray-200/50 shadow-lg">
+      <header className="bg-white border-b border-gray-200">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
             <Link
               href="/"
-              className="group p-3 hover:bg-gradient-to-r hover:from-blue-100 hover:to-purple-100 rounded-xl transition-all duration-300"
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 text-gray-700 group-hover:text-blue-600 transition-colors" />
+              <ArrowLeft className="w-5 h-5 text-gray-600" />
             </Link>
-            <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                ✨ Buat Ujian Baru
-              </h1>
-              <p className="text-sm text-gray-600 mt-1">
-                Langkah {step} dari 2 • {step === 1 ? 'Informasi Ujian' : 'Input Kunci Jawaban'}
-              </p>
+            <div className="flex items-center gap-3">
+              <Image
+                src="/Logo.jpg"
+                alt="Logo"
+                width={40}
+                height={40}
+                className="rounded-full"
+              />
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Buat Ujian Baru</h1>
+                <p className="text-sm text-gray-500">
+                  Langkah {step} dari 2 - {step === 1 ? 'Informasi Ujian' : 'Input Kunci Jawaban'}
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </header>
 
-      <main className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Progress Steps */}
         <div className="mb-8">
           <div className="flex items-center justify-center gap-4">
             <div className="flex items-center">
               <div
-                className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg shadow-lg transition-all duration-300 ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm ${
                   step >= 1
-                    ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white scale-110'
+                    ? 'bg-blue-600 text-white'
                     : 'bg-gray-200 text-gray-500'
                 }`}
               >
                 {step > 1 ? '✓' : '1'}
               </div>
-              <span className={`ml-3 font-semibold transition-colors ${
+              <span className={`ml-2 font-medium text-sm ${
                 step >= 1 ? 'text-blue-600' : 'text-gray-500'
               }`}>
                 Informasi Ujian
               </span>
             </div>
-            <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="w-16 h-1 bg-gray-200 rounded">
               <div
-                className={`h-full transition-all duration-500 rounded-full ${
-                  step >= 2 ? 'bg-gradient-to-r from-blue-600 to-purple-600 w-full' : 'w-0'
+                className={`h-full rounded transition-all ${
+                  step >= 2 ? 'bg-blue-600 w-full' : 'w-0'
                 }`}
               />
             </div>
             <div className="flex items-center">
               <div
-                className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-lg shadow-lg transition-all duration-300 ${
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm ${
                   step >= 2
-                    ? 'bg-gradient-to-br from-blue-600 to-purple-600 text-white scale-110'
+                    ? 'bg-blue-600 text-white'
                     : 'bg-gray-200 text-gray-500'
                 }`}
               >
                 2
               </div>
-              <span className={`ml-3 font-semibold transition-colors ${
+              <span className={`ml-2 font-medium text-sm ${
                 step >= 2 ? 'text-blue-600' : 'text-gray-500'
               }`}>
                 Kunci Jawaban
@@ -149,9 +151,9 @@ export default function NewExamPage() {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-gradient-to-r from-red-50 to-pink-50 border-2 border-red-300 rounded-xl shadow-lg animate-fadeInUp">
-            <p className="text-sm text-red-800 font-medium flex items-center">
-              <span className="text-2xl mr-2">⚠️</span>
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-700 flex items-center">
+              <span className="mr-2">⚠️</span>
               {error}
             </p>
           </div>
@@ -159,20 +161,20 @@ export default function NewExamPage() {
 
         {/* Step 1: Exam Information */}
         {step === 1 && (
-          <form onSubmit={handleStep1Submit} className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-white/50 animate-fadeInUp">
+          <form onSubmit={handleStep1Submit} className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="bg-gradient-to-br from-blue-500 to-purple-500 p-3 rounded-xl">
-                <BookOpen className="w-6 h-6 text-white" />
+              <div className="bg-blue-100 p-2 rounded-lg">
+                <BookOpen className="w-5 h-5 text-blue-600" />
               </div>
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h2 className="text-lg font-semibold text-gray-900">
                 Informasi Ujian
               </h2>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-5">
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  📝 Nama Ujian <span className="text-red-500">*</span>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama Ujian <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -180,14 +182,14 @@ export default function NewExamPage() {
                   value={formData.title}
                   onChange={handleInputChange}
                   placeholder="Contoh: UTS Matematika Kelas 9A"
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:border-blue-300"
+                  className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Tanggal Ujian <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -195,13 +197,14 @@ export default function NewExamPage() {
                     name="date"
                     value={formData.date}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    title="Pilih tanggal ujian"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Mata Pelajaran <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -210,7 +213,7 @@ export default function NewExamPage() {
                     value={formData.subject}
                     onChange={handleInputChange}
                     placeholder="Contoh: Matematika"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                     required
                   />
                 </div>
@@ -218,7 +221,7 @@ export default function NewExamPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Kelas <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -227,13 +230,13 @@ export default function NewExamPage() {
                     value={formData.class}
                     onChange={handleInputChange}
                     placeholder="Contoh: 9A"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Jumlah Soal Aktif <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -243,7 +246,8 @@ export default function NewExamPage() {
                     onChange={handleInputChange}
                     min="1"
                     max="180"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    title="Jumlah soal aktif"
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                     required
                   />
                   <p className="mt-1 text-xs text-gray-500">
@@ -256,10 +260,10 @@ export default function NewExamPage() {
             <div className="mt-8 flex justify-end">
               <button
                 type="submit"
-                className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 font-semibold text-lg"
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
               >
                 Lanjut ke Kunci Jawaban
-                <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                <span>→</span>
               </button>
             </div>
           </form>
@@ -267,7 +271,7 @@ export default function NewExamPage() {
 
         {/* Step 2: Answer Key */}
         {step === 2 && (
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-white/50 animate-fadeInUp">
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
             <AnswerKeyGrid
               totalQuestions={formData.active_questions}
               answerKey={answerKey}
@@ -278,26 +282,26 @@ export default function NewExamPage() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="group px-6 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all duration-300 font-semibold shadow-md hover:shadow-lg"
+                className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium flex items-center gap-2"
                 disabled={loading}
               >
-                <span className="inline-block group-hover:-translate-x-1 transition-transform">←</span>
-                <span className="ml-2">Kembali</span>
+                <span>←</span>
+                Kembali
               </button>
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={loading || Object.keys(answerKey).length !== formData.active_questions}
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-semibold flex items-center gap-2 hover:scale-105"
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
               >
                 {loading ? (
                   <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                     Menyimpan...
                   </>
                 ) : (
                   <>
-                    <Save className="w-5 h-5" />
+                    <Save className="w-4 h-4" />
                     Simpan & Lanjutkan
                   </>
                 )}

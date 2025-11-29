@@ -61,6 +61,17 @@ class StorageService:
             return True
         return False
     
+    def update_exam(self, exam_id: str, exam_data: Dict) -> bool:
+        """Update exam configuration"""
+        file_path = self.exams_dir / f"{exam_id}.json"
+        if not file_path.exists():
+            return False
+        
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(exam_data, f, indent=2, ensure_ascii=False)
+        
+        return True
+    
     # ============ RESULT OPERATIONS ============
     
     def save_result(self, result_data: Dict) -> str:

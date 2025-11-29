@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./force-light.css";
+import { AuthProvider } from "@/context/AuthContext";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 export const metadata: Metadata = {
   title: "LJK Grading System - SMPN 1 Darangdan",
@@ -24,7 +26,11 @@ export default function RootLayout({
         `}</style>
       </head>
       <body suppressHydrationWarning>
-        {children}
+        <AuthProvider>
+          <ProtectedRoute>
+            {children}
+          </ProtectedRoute>
+        </AuthProvider>
       </body>
     </html>
   );
