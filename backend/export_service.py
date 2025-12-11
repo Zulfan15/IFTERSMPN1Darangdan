@@ -32,7 +32,6 @@ class ExportService:
         self._create_summary_sheet(wb, exam, stats)
         self._create_scores_sheet(wb, exam, results)
         self._create_details_sheet(wb, exam, results)
-        self._create_analysis_sheet(wb, exam, results)
         
         # Save file
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -105,7 +104,7 @@ class ExportService:
         ws = wb.create_sheet("Nilai Siswa")
         
         # Header
-        headers = ['No', 'Nama Siswa', 'No. Induk', 'Benar', 'Salah', 'Kosong', 'Skor', 'Persentase', 'Predikat']
+        headers = ['No', 'Nama Siswa', 'No. Induk', 'Benar', 'Salah', 'Kosong', 'Skor', 'Nilai Siswa', 'Predikat']
         for col, header in enumerate(headers, start=1):
             cell = ws.cell(row=1, column=col, value=header)
             cell.font = Font(bold=True)
@@ -115,6 +114,9 @@ class ExportService:
         
         # Data
         for idx, result in enumerate(results, start=2):
+            # Calculate nilai (score out of 100)
+            nilai_siswa = round(result['score']['percentage'], 2)
+            
             ws.cell(row=idx, column=1, value=idx-1)
             ws.cell(row=idx, column=2, value=result.get('student_name', 'N/A'))
             ws.cell(row=idx, column=3, value=result.get('student_number', 'N/A'))
@@ -122,7 +124,7 @@ class ExportService:
             ws.cell(row=idx, column=5, value=result['score']['wrong'])
             ws.cell(row=idx, column=6, value=result['score']['unanswered'])
             ws.cell(row=idx, column=7, value=result['score']['correct'])
-            ws.cell(row=idx, column=8, value=f"{result['score']['percentage']:.2f}%")
+            ws.cell(row=idx, column=8, value=nilai_siswa)
             ws.cell(row=idx, column=9, value=self._get_predicate(result['score']['percentage']))
         
         # Format columns
@@ -163,66 +165,6 @@ class ExportService:
                     cell.fill = PatternFill(start_color="C6EFCE", end_color="C6EFCE", fill_type="solid")  # Green
                 elif ans_idx != -1:
                     cell.fill = PatternFill(start_color="FFC7CE", end_color="FFC7CE", fill_type="solid")  # Red
-    
-    def _create_analysis_sheet(self, wb, exam, results):
-        """Sheet 4: Analisis Soal"""
-        ws = wb.create_sheet("Analisis Soal")
-        
-        # Header
-        headers = ['No Soal', 'Kunci', '% Benar', '% Salah', '% Kosong', 'Tingkat Kesulitan']
-        for col, header in enumerate(headers, start=1):
-            cell = ws.cell(row=1, column=col, value=header)
-            cell.font = Font(bold=True)
-            cell.fill = PatternFill(start_color="4472C4", end_color="4472C4", fill_type="solid")
-            cell.font = Font(bold=True, color="FFFFFF")
-        
-        # Analyze each question
-        total_students = len(results)
-        
-        for q_num in range(exam['active_questions']):
-            correct_count = 0
-            wrong_count = 0
-            unanswered_count = 0
-            
-            key_idx = exam['answer_key'].get(str(q_num), -1)
-            
-            for result in results:
-                ans_idx = result['answers'].get(str(q_num), -1)
-                
-                if ans_idx == key_idx and ans_idx >= 0:
-                    correct_count += 1
-                elif ans_idx == -1:
-                    unanswered_count += 1
-                else:
-                    wrong_count += 1
-            
-            # Calculate percentages
-            correct_pct = (correct_count / total_students * 100) if total_students > 0 else 0
-            wrong_pct = (wrong_count / total_students * 100) if total_students > 0 else 0
-            unanswered_pct = (unanswered_count / total_students * 100) if total_students > 0 else 0
-            
-            # Determine difficulty
-            if correct_pct >= 80:
-                difficulty = "Mudah"
-            elif correct_pct >= 50:
-                difficulty = "Sedang"
-            else:
-                difficulty = "Sulit"
-            
-            # Write data
-            row = q_num + 2
-            key_letter = chr(65 + key_idx) if key_idx >= 0 else '?'
-            
-            ws.cell(row=row, column=1, value=q_num+1)
-            ws.cell(row=row, column=2, value=key_letter)
-            ws.cell(row=row, column=3, value=f"{correct_pct:.1f}%")
-            ws.cell(row=row, column=4, value=f"{wrong_pct:.1f}%")
-            ws.cell(row=row, column=5, value=f"{unanswered_pct:.1f}%")
-            ws.cell(row=row, column=6, value=difficulty)
-        
-        # Format columns
-        for col in range(1, 7):
-            ws.column_dimensions[get_column_letter(col)].width = 18
     
     def _get_predicate(self, percentage: float) -> str:
         """Convert percentage to grade predicate"""
