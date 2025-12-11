@@ -162,3 +162,33 @@ export const getTemplateStatus = async (): Promise<{
   const response = await api.get('/api/template/status');
   return response.data;
 };
+
+// Archive
+export interface ArchiveFile {
+  filename: string;
+  size: number;
+  created_date: string;
+}
+
+export const archiveExams = async (startDate: string, endDate: string) => {
+  const response = await api.post(
+    `/api/archive?start_date=${startDate}&end_date=${endDate}`
+  );
+  return response.data;
+};
+
+export const cleanupArchivedExams = async (startDate: string, endDate: string) => {
+  const response = await api.delete(
+    `/api/archive/cleanup?start_date=${startDate}&end_date=${endDate}`
+  );
+  return response.data;
+};
+
+export const listArchives = async (): Promise<{ archives: ArchiveFile[] }> => {
+  const response = await api.get('/api/archive/list');
+  return response.data;
+};
+
+export const getArchiveDownloadUrl = (filename: string): string => {
+  return `${API_BASE_URL}/api/archive/download/${filename}`;
+};

@@ -1,6 +1,6 @@
 # FastAPI Main Application
 
-from fastapi import FastAPI, File, UploadFile, HTTPException, Form
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
@@ -9,6 +9,10 @@ from typing import List, Optional
 import uuid
 import shutil
 import cv2
+import zipfile
+import json
+import os
+from datetime import datetime
 
 from models import ExamCreate, ExamResponse, ProcessLJKRequest, ResultResponse
 from storage import StorageService
@@ -292,6 +296,205 @@ async def get_template_status():
         "template_exists": template_path.exists(),
         "roi_config": processor.roi_config
     }
+
+# ============ ARCHIVE ============
+
+@app.post("/api/archive")
+async def archive_exams(
+    start_date: str = Query(..., description="Format: YYYY-MM-DD"),
+    end_date: str = Query(..., description="Format: YYYY-MM-DD")
+):
+    """Archive ujian dalam rentang tanggal ke file ZIP"""
+    try:
+        # Parse dates
+        start = datetime.strptime(start_date, "%Y-%m-%d")
+        end = datetime.strptime(end_date, "%Y-%m-%d")
+        
+        # Get all exams
+        all_exams = storage.list_exams()
+        exams_to_archive = []
+        
+        for exam in all_exams:
+            # Parse exam date
+            exam_date_str = exam.get('exam_date') or exam.get('date', '')
+            if not exam_date_str:
+                continue
+            
+            try:
+                exam_date = datetime.strptime(exam_date_str, "%Y-%m-%d")
+                if start <= exam_date <= end:
+                    exams_to_archive.append(exam)
+            except ValueError:
+                continue
+        
+        if not exams_to_archive:
+            raise HTTPException(status_code=404, detail="Tidak ada ujian dalam rentang tanggal tersebut")
+        
+        # Create archive folder
+        archive_dir = config.DATA_DIR / "archives"
+        archive_dir.mkdir(exist_ok=True)
+        
+        # Create ZIP filename
+        zip_filename = f"archive_{start_date}_to_{end_date}.zip"
+        zip_path = archive_dir / zip_filename
+        
+        # Create ZIP file
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            # Prepare archive data
+            exam_ids = [exam['exam_id'] for exam in exams_to_archive]
+            
+            # Add exam JSON files
+            for exam_id in exam_ids:
+                exam_file = config.EXAMS_DIR / f"{exam_id}.json"
+                if exam_file.exists():
+                    zipf.write(exam_file, f"data/exams/{exam_id}.json")
+            
+            # Add result JSON files
+            result_count = 0
+            for exam_id in exam_ids:
+                results = storage.list_results_by_exam(exam_id)
+                for result in results:
+                    result_id = result['result_id']
+                    result_file = config.RESULTS_DIR / f"{result_id}.json"
+                    if result_file.exists():
+                        zipf.write(result_file, f"data/results/{result_id}.json")
+                        result_count += 1
+            
+            # Add images
+            for exam_id in exam_ids:
+                upload_dir = config.UPLOADS_DIR / exam_id
+                processed_dir = config.PROCESSED_DIR / exam_id
+                
+                # Add uploaded images
+                if upload_dir.exists():
+                    for img_file in upload_dir.rglob("*"):
+                        if img_file.is_file():
+                            arcname = f"data/images/uploads/{exam_id}/{img_file.relative_to(upload_dir)}"
+                            zipf.write(img_file, arcname)
+                
+                # Add processed images
+                if processed_dir.exists():
+                    for img_file in processed_dir.rglob("*"):
+                        if img_file.is_file():
+                            arcname = f"data/images/processed/{exam_id}/{img_file.relative_to(processed_dir)}"
+                            zipf.write(img_file, arcname)
+            
+            # Add archive info file
+            archive_info = {
+                "archived_date": datetime.now().isoformat(),
+                "date_range": {
+                    "start": start_date,
+                    "end": end_date
+                },
+                "exam_count": len(exams_to_archive),
+                "result_count": result_count,
+                "exam_ids": exam_ids
+            }
+            zipf.writestr("archive_info.json", json.dumps(archive_info, indent=2, ensure_ascii=False))
+        
+        file_size = os.path.getsize(zip_path)
+        
+        return {
+            "message": f"Berhasil mengarsipkan {len(exams_to_archive)} ujian",
+            "exam_count": len(exams_to_archive),
+            "result_count": result_count,
+            "zip_file": zip_filename,
+            "zip_path": str(zip_path),
+            "file_size": file_size,
+            "file_size_mb": round(file_size / (1024 * 1024), 2)
+        }
+    
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail="Format tanggal salah. Gunakan YYYY-MM-DD")
+    except Exception as e:
+        print(f"Archive error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/api/archive/cleanup")
+async def cleanup_archived_exams(
+    start_date: str = Query(...),
+    end_date: str = Query(...)
+):
+    """Hapus ujian yang sudah diarsipkan dari database"""
+    try:
+        start = datetime.strptime(start_date, "%Y-%m-%d")
+        end = datetime.strptime(end_date, "%Y-%m-%d")
+        
+        all_exams = storage.list_exams()
+        deleted_count = 0
+        
+        for exam in all_exams:
+            exam_date_str = exam.get('exam_date') or exam.get('date', '')
+            if not exam_date_str:
+                continue
+            
+            try:
+                exam_date = datetime.strptime(exam_date_str, "%Y-%m-%d")
+                if start <= exam_date <= end:
+                    exam_id = exam['exam_id']
+                    
+                    # Delete exam from storage
+                    storage.delete_exam(exam_id)
+                    
+                    # Delete image folders
+                    upload_dir = config.UPLOADS_DIR / exam_id
+                    processed_dir = config.PROCESSED_DIR / exam_id
+                    
+                    if upload_dir.exists():
+                        shutil.rmtree(upload_dir)
+                    if processed_dir.exists():
+                        shutil.rmtree(processed_dir)
+                    
+                    deleted_count += 1
+            except ValueError:
+                continue
+        
+        return {
+            "message": f"Berhasil menghapus {deleted_count} ujian yang sudah diarsipkan",
+            "deleted_count": deleted_count
+        }
+    
+    except Exception as e:
+        print(f"Cleanup error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/archive/list")
+async def list_archives():
+    """List semua file arsip yang tersedia"""
+    archive_dir = config.DATA_DIR / "archives"
+    archive_dir.mkdir(exist_ok=True)
+    
+    archives = []
+    for zip_file in archive_dir.glob("*.zip"):
+        archives.append({
+            "filename": zip_file.name,
+            "size": os.path.getsize(zip_file),
+            "created_date": datetime.fromtimestamp(zip_file.stat().st_ctime).isoformat()
+        })
+    
+    # Sort by created date descending
+    archives.sort(key=lambda x: x['created_date'], reverse=True)
+    
+    return {"archives": archives}
+
+
+@app.get("/api/archive/download/{filename}")
+async def download_archive(filename: str):
+    """Download file arsip"""
+    # Sanitize filename to prevent path traversal
+    filename = Path(filename).name
+    zip_path = config.DATA_DIR / "archives" / filename
+    
+    if not zip_path.exists():
+        raise HTTPException(status_code=404, detail="File arsip tidak ditemukan")
+    
+    return FileResponse(
+        path=str(zip_path),
+        filename=filename,
+        media_type="application/zip"
+    )
 
 if __name__ == "__main__":
     import uvicorn

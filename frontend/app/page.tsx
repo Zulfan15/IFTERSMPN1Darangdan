@@ -500,6 +500,23 @@ export default function DashboardPage() {
           </Link>
 
           <Link
+            href="/archive"
+            className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200 hover:border-purple-300 hover:shadow transition-all group"
+          >
+            <div className="flex items-center gap-3 md:gap-4">
+              <div className="w-10 h-10 md:w-12 md:h-12 bg-purple-100 rounded-lg flex items-center justify-center group-hover:bg-purple-200 transition-colors flex-shrink-0">
+                <svg className="w-5 h-5 md:w-6 md:h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                </svg>
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-medium text-gray-800 text-sm md:text-base">Arsip Data</h3>
+                <p className="text-xs md:text-sm text-gray-500 truncate">Backup ujian lama</p>
+              </div>
+            </div>
+          </Link>
+
+          <Link
             href="/help"
             className="bg-white rounded-lg p-4 md:p-5 shadow-sm border border-gray-200 hover:border-blue-300 hover:shadow transition-all group"
           >
